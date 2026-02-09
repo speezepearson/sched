@@ -8,7 +8,7 @@ const convex = new ConvexReactClient(
   import.meta.env.VITE_CONVEX_URL as string
 );
 
-createRoot(document.getElementById("root")!).render(
+createRoot(document.getElementById("sched-root")!).render(
   <StrictMode>
     <ConvexProvider client={convex}>
       <App />
