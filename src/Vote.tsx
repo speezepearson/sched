@@ -97,6 +97,9 @@ export default function Vote({ eventId }: { eventId: string }) {
       {event.description && (
         <p style={{ marginBottom: 16, color: "#555" }}>{event.description}</p>
       )}
+      <p style={{ color: "#666", marginBottom: 8 }}>
+        Click or click+drag to paint over all the times that work for you.
+      </p>
 
       <div className="brush-selector">
         <span>Brush:</span>
