@@ -23,6 +23,7 @@ interface TimeGridProps {
   onDragEnd?: () => void;
   onCellMouseEnter?: (slot: string) => void;
   onCellMouseLeave?: () => void;
+  onColumnHeaderClick?: (date: string) => void;
 }
 
 export default function TimeGrid({
@@ -35,6 +36,7 @@ export default function TimeGrid({
   onDragEnd,
   onCellMouseEnter,
   onCellMouseLeave,
+  onColumnHeaderClick,
 }: TimeGridProps) {
   const isDragging = useRef(false);
 
@@ -61,7 +63,11 @@ export default function TimeGrid({
 
         return (
           <div key={date} className="time-grid-column">
-            <div className="time-grid-day-header">
+            <div
+              className="time-grid-day-header"
+              onClick={() => onColumnHeaderClick?.(date)}
+              style={onColumnHeaderClick ? { cursor: "pointer" } : undefined}
+            >
               <span className="weekday">{weekday}</span>
               <span className="date">{monthDay}</span>
             </div>

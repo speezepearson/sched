@@ -168,6 +168,17 @@ export default function CreateEvent() {
         })}
         onDragStart={handleDragStart}
         onDragEnter={handleDragEnter}
+        onColumnHeaderClick={(date) => {
+          setSelectedSlots((prev) => {
+            const colSlots = HOURS.map((h) => slotKey(date, h));
+            const allSelected = colSlots.every((s) => prev.has(s));
+            const next = new Set(prev);
+            for (const s of colSlots) {
+              allSelected ? next.delete(s) : next.add(s);
+            }
+            return next;
+          });
+        }}
       />
 
       <button

@@ -2,7 +2,7 @@ import { useState, useCallback, useRef } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 import type { Id } from "../convex/_generated/dataModel";
-import TimeGrid from "./TimeGrid.tsx";
+import TimeGrid, { HOURS, slotKey } from "./TimeGrid.tsx";
 
 type Rating = "great" | "good" | "fine";
 type Brush = Rating | "none";
@@ -123,6 +123,28 @@ export default function Vote({ eventId }: { eventId: string }) {
         })}
         onDragStart={handleDragStart}
         onDragEnter={applyEffectiveBrush}
+        onColumnHeaderClick={(date) => {
+          const colSlots = HOURS.map((h) => slotKey(date, h)).filter((s) =>
+            slots.has(s)
+          );
+          setRatings((prev) => {
+            const allMatch =
+              brush === "none"
+                ? colSlots.every((s) => !prev.has(s))
+                : colSlots.every((s) => prev.get(s) === brush);
+            const next = new Map(prev);
+            for (const s of colSlots) {
+              if (allMatch) {
+                next.delete(s);
+              } else if (brush !== "none") {
+                next.set(s, brush);
+              } else {
+                next.delete(s);
+              }
+            }
+            return next;
+          });
+        }}
       />
 
       <div className="form-group" style={{ marginTop: 16 }}>
