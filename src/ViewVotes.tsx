@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
 import type { Id } from "../convex/_generated/dataModel";
-import TimeGrid, { formatHour } from "./TimeGrid.tsx";
+import TimeGrid, { formatHour, dateRange } from "./TimeGrid.tsx";
 
 type Rating = "great" | "good" | "fine";
 
@@ -70,7 +70,7 @@ export default function ViewVotes({ eventId }: { eventId: string }) {
   if (event === null) return <div className="app">Event not found.</div>;
 
   const slots = new Set(event.slots);
-  const dates = [...new Set(event.slots.map((s) => s.split(":")[0]))].sort();
+  const dates = dateRange(event.slots);
 
   const ratingColors: Record<string, string> = {
     great: "#22c55e",

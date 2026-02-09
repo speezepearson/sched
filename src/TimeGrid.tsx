@@ -13,6 +13,19 @@ export function slotKey(date: string, hour: number): string {
   return `${date}:${hour}`;
 }
 
+export function dateRange(slots: string[]): string[] {
+  const unique = [...new Set(slots.map((s) => s.split(":")[0]))].sort();
+  if (unique.length <= 1) return unique;
+  const result: string[] = [];
+  const current = new Date(unique[0] + "T12:00:00");
+  const end = new Date(unique[unique.length - 1] + "T12:00:00");
+  while (current <= end) {
+    result.push(current.toISOString().split("T")[0]);
+    current.setDate(current.getDate() + 1);
+  }
+  return result;
+}
+
 interface TimeGridProps {
   dates: string[];
   activeSlots?: Set<string>;

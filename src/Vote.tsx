@@ -2,7 +2,7 @@ import { useState, useCallback, useRef } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 import type { Id } from "../convex/_generated/dataModel";
-import TimeGrid, { HOURS, slotKey } from "./TimeGrid.tsx";
+import TimeGrid, { HOURS, slotKey, dateRange } from "./TimeGrid.tsx";
 
 type Rating = "great" | "good" | "fine";
 type Brush = Rating | "none";
@@ -74,7 +74,7 @@ export default function Vote({ eventId }: { eventId: string }) {
   if (event === null) return <div className="app">Event not found.</div>;
 
   const slots = new Set(event.slots);
-  const dates = [...new Set(event.slots.map((s) => s.split(":")[0]))].sort();
+  const dates = dateRange(event.slots);
 
   if (submitted) {
     const base = window.location.href.split("#")[0];
