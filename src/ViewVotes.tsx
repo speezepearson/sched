@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
-import type { Id } from "../convex/_generated/dataModel";
 import TimeGrid, { formatHour, dateRange } from "./TimeGrid.tsx";
 
 type Rating = "great" | "good" | "fine";
@@ -13,13 +12,18 @@ interface CellAggregation {
   voterRatings: { name: string; rating: Rating | "cant" }[];
 }
 
-export default function ViewVotes({ eventId }: { eventId: string }) {
-  const event = useQuery(api.events.get, {
-    id: eventId as Id<"events">,
-  });
-  const votes = useQuery(api.votes.getByEvent, {
-    eventId: eventId as Id<"events">,
-  });
+export default function ViewVotes({
+  quickId,
+  modKey,
+}: {
+  quickId: string;
+  modKey: string;
+}) {
+  const event = useQuery(api.events.getByQuickId, { quickId });
+  const votes = useQuery(
+    api.votes.getByEvent,
+    event ? { eventId: event._id, modKey } : "skip"
+  );
 
   const [hoveredCell, setHoveredCell] = useState<string | null>(null);
   const [hoveredVoter, setHoveredVoter] = useState<string | null>(null);
@@ -68,6 +72,7 @@ export default function ViewVotes({ eventId }: { eventId: string }) {
   if (event === undefined || votes === undefined)
     return <div className="app">Loading...</div>;
   if (event === null) return <div className="app">Event not found.</div>;
+  if (event.modKey !== modKey) return <div className="app">Invalid link.</div>;
 
   const slots = new Set(event.slots);
   const dates = dateRange(event.slots);

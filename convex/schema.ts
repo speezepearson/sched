@@ -6,7 +6,9 @@ export default defineSchema({
     name: v.string(),
     description: v.string(),
     slots: v.array(v.string()), // "YYYY-MM-DD:HH" format
-  }),
+    quickId: v.string(),
+    modKey: v.string(),
+  }).index("by_quickId", ["quickId"]),
   votes: defineTable({
     eventId: v.id("events"),
     voterName: v.string(),

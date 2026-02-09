@@ -18,8 +18,9 @@ function App() {
   const voteMatch = path.match(/^\/vote\/(.+)$/);
   if (voteMatch) return <Vote eventId={voteMatch[1]} />;
 
-  const viewMatch = path.match(/^\/view\/(.+)$/);
-  if (viewMatch) return <ViewVotes eventId={viewMatch[1]} />;
+  const viewMatch = path.match(/^\/view\/([^/]+)\/([^/]+)$/);
+  if (viewMatch)
+    return <ViewVotes quickId={viewMatch[1]} modKey={viewMatch[2]} />;
 
   return <CreateEvent />;
 }

@@ -22,8 +22,12 @@ export const submit = mutation({
 });
 
 export const getByEvent = query({
-  args: { eventId: v.id("events") },
+  args: { eventId: v.id("events"), modKey: v.string() },
   handler: async (ctx, args) => {
+    const event = await ctx.db.get(args.eventId);
+    if (!event || event.modKey !== args.modKey) {
+      throw new Error("Invalid modKey");
+    }
     return await ctx.db
       .query("votes")
       .withIndex("by_event", (q) => q.eq("eventId", args.eventId))

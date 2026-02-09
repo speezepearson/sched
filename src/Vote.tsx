@@ -1,7 +1,6 @@
 import { useState, useCallback, useRef } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
-import type { Id } from "../convex/_generated/dataModel";
 import TimeGrid, { HOURS, slotKey, dateRange } from "./TimeGrid.tsx";
 
 type Rating = "great" | "good" | "fine";
@@ -14,8 +13,8 @@ const RATING_COLORS: Record<Rating, string> = {
 };
 
 export default function Vote({ eventId }: { eventId: string }) {
-  const event = useQuery(api.events.get, {
-    id: eventId as Id<"events">,
+  const event = useQuery(api.events.getByQuickId, {
+    quickId: eventId,
   });
   const submitVote = useMutation(api.votes.submit);
 
@@ -60,7 +59,7 @@ export default function Vote({ eventId }: { eventId: string }) {
   const handleSubmit = async () => {
     if (!voterName.trim() || !event) return;
     await submitVote({
-      eventId: eventId as Id<"events">,
+      eventId: event._id,
       voterName: voterName.trim(),
       ratings: Array.from(ratings.entries()).map(([slot, rating]) => ({
         slot,
@@ -77,15 +76,11 @@ export default function Vote({ eventId }: { eventId: string }) {
   const dates = dateRange(event.slots);
 
   if (submitted) {
-    const base = window.location.href.split("#")[0];
-    const viewUrl = `${base}#/view/${eventId}`;
     return (
       <div className="app">
         <div className="created-result">
           <h2>Vote Submitted!</h2>
-          <p>
-            View results: <a href={viewUrl}>{viewUrl}</a>
-          </p>
+          <p>Thanks for voting!</p>
         </div>
       </div>
     );

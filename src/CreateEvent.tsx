@@ -16,7 +16,10 @@ export default function CreateEvent() {
     return d.toISOString().split("T")[0];
   });
   const [selectedSlots, setSelectedSlots] = useState<Set<string>>(new Set());
-  const [createdId, setCreatedId] = useState<string | null>(null);
+  const [createdEvent, setCreatedEvent] = useState<{
+    quickId: string;
+    modKey: string;
+  } | null>(null);
   const [dragAction, setDragAction] = useState<"add" | "remove">("add");
 
   const createEvent = useMutation(api.events.create);
@@ -69,18 +72,18 @@ export default function CreateEvent() {
 
   const handleCreate = async () => {
     if (!name.trim() || selectedSlots.size === 0) return;
-    const id = await createEvent({
+    const result = await createEvent({
       name: name.trim(),
       description: description.trim(),
       slots: Array.from(selectedSlots).sort(),
     });
-    setCreatedId(id);
+    setCreatedEvent(result);
   };
 
-  if (createdId) {
+  if (createdEvent) {
     const base = window.location.href.split("#")[0];
-    const voteUrl = `${base}#/vote/${createdId}`;
-    const viewUrl = `${base}#/view/${createdId}`;
+    const voteUrl = `${base}#/vote/${createdEvent.quickId}`;
+    const viewUrl = `${base}#/view/${createdEvent.quickId}/${createdEvent.modKey}`;
     return (
       <div className="app">
         <div className="created-result">
