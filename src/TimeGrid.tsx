@@ -39,6 +39,9 @@ export default function TimeGrid({
   onColumnHeaderClick,
 }: TimeGridProps) {
   const isDragging = useRef(false);
+  const touchActive = useRef(false);
+  const lastTouchSlot = useRef<string | null>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleMouseUp = () => {
@@ -51,8 +54,44 @@ export default function TimeGrid({
     return () => document.removeEventListener("mouseup", handleMouseUp);
   }, [onDragEnd]);
 
+  useEffect(() => {
+    const grid = gridRef.current;
+    if (!grid) return;
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isDragging.current) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      const el = document.elementFromPoint(touch.clientX, touch.clientY);
+      const cell = el?.closest<HTMLElement>("[data-slot]");
+      const slot = cell?.dataset.slot ?? null;
+      if (slot && slot !== lastTouchSlot.current) {
+        lastTouchSlot.current = slot;
+        onDragEnter?.(slot);
+      }
+    };
+    grid.addEventListener("touchmove", handleTouchMove, { passive: false });
+    return () => grid.removeEventListener("touchmove", handleTouchMove);
+  }, [onDragEnter]);
+
+  useEffect(() => {
+    const handleTouchEnd = () => {
+      if (isDragging.current) {
+        isDragging.current = false;
+        lastTouchSlot.current = null;
+        onDragEnd?.();
+      }
+      setTimeout(() => { touchActive.current = false; }, 400);
+    };
+    document.addEventListener("touchend", handleTouchEnd);
+    document.addEventListener("touchcancel", handleTouchEnd);
+    return () => {
+      document.removeEventListener("touchend", handleTouchEnd);
+      document.removeEventListener("touchcancel", handleTouchEnd);
+    };
+  }, [onDragEnd]);
+
   return (
-    <div className="time-grid" onMouseLeave={() => onCellMouseLeave?.()}>
+    <div ref={gridRef} className="time-grid" onMouseLeave={() => onCellMouseLeave?.()}>
       {dates.map((date) => {
         const d = new Date(date + "T12:00:00");
         const weekday = d.toLocaleDateString("en-US", { weekday: "short" });
@@ -83,8 +122,10 @@ export default function TimeGrid({
                 <div
                   key={h}
                   className="time-grid-cell"
+                  data-slot={slot}
                   style={getCellStyle(slot)}
                   onMouseDown={(e) => {
+                    if (touchActive.current) return;
                     e.preventDefault();
                     isDragging.current = true;
                     onDragStart?.(slot);
@@ -94,6 +135,12 @@ export default function TimeGrid({
                       onDragEnter?.(slot);
                     }
                     onCellMouseEnter?.(slot);
+                  }}
+                  onTouchStart={() => {
+                    touchActive.current = true;
+                    isDragging.current = true;
+                    lastTouchSlot.current = slot;
+                    onDragStart?.(slot);
                   }}
                 >
                   <span className="time-grid-cell-label">
