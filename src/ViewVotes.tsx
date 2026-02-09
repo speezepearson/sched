@@ -113,7 +113,7 @@ export default function ViewVotes({ eventId }: { eventId: string }) {
     for (let i = 0; i < data.cantCount; i++) {
       dots.push(<span key={i} className="red-dot" />);
     }
-    return <>{dots}</>;
+    return <span className="red-dots">{dots}</span>;
   };
 
   const toggleVoter = (name: string) => {

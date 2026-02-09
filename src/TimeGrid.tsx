@@ -4,9 +4,9 @@ import type { CSSProperties, ReactNode } from "react";
 export const HOURS = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22];
 
 export function formatHour(h: number): string {
-  const suffix = h < 12 ? "AM" : "PM";
+  const suffix = h < 12 ? "am" : "pm";
   const display = h > 12 ? h - 12 : h;
-  return `${display} ${suffix}`;
+  return `${display}:00 ${suffix}`;
 }
 
 export function slotKey(date: string, hour: number): string {
@@ -51,14 +51,6 @@ export default function TimeGrid({
 
   return (
     <div className="time-grid">
-      <div className="time-grid-header">
-        <div className="time-grid-header-spacer" />
-        {HOURS.map((h) => (
-          <div key={h} className="time-grid-hour-label">
-            {formatHour(h)}
-          </div>
-        ))}
-      </div>
       {dates.map((date) => {
         const d = new Date(date + "T12:00:00");
         const weekday = d.toLocaleDateString("en-US", { weekday: "short" });
