@@ -101,6 +101,7 @@ export default function CreateEvent() {
         <div className="form-group">
           <label>Event Name</label>
           <input
+            autoFocus
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Team Dinner"
