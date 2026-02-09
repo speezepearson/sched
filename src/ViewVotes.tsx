@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
 import TimeGrid, { formatHour, dateRange } from "./TimeGrid.tsx";
@@ -24,6 +24,16 @@ export default function ViewVotes({
     api.votes.getByEvent,
     event ? { eventId: event._id, modKey } : "skip"
   );
+
+  const oldTitle = useRef(document.title);
+  useEffect(() => {
+    if (event) {
+      document.title = `${event.name} - ${oldTitle.current}`;
+    }
+    return () => {
+      document.title = oldTitle.current;
+    };
+  }, [event?.name]);
 
   const [hoveredCell, setHoveredCell] = useState<string | null>(null);
   const [hoveredVoter, setHoveredVoter] = useState<string | null>(null);
