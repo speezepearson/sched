@@ -50,7 +50,7 @@ export default function TimeGrid({
   }, [onDragEnd]);
 
   return (
-    <div className="time-grid">
+    <div className="time-grid" onMouseLeave={() => onCellMouseLeave?.()}>
       {dates.map((date) => {
         const d = new Date(date + "T12:00:00");
         const weekday = d.toLocaleDateString("en-US", { weekday: "short" });
@@ -88,9 +88,6 @@ export default function TimeGrid({
                       onDragEnter?.(slot);
                     }
                     onCellMouseEnter?.(slot);
-                  }}
-                  onMouseLeave={() => {
-                    onCellMouseLeave?.();
                   }}
                 >
                   <span className="time-grid-cell-label">
