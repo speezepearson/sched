@@ -89,8 +89,14 @@
   font-size: 11px;
 }
 
+.time-grid-cell-label {
+  font-size: 9px;
+  color: rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
 .time-grid-cell {
-  width: 48px;
+  width: 54px;
   height: 28px;
   border: 1px solid #fff;
   border-radius: 2px;

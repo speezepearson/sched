@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 import type { Id } from "../convex/_generated/dataModel";
@@ -23,20 +23,38 @@ export default function Vote({ eventId }: { eventId: string }) {
   const [ratings, setRatings] = useState<Map<string, Rating>>(new Map());
   const [brush, setBrush] = useState<Brush>("great");
   const [submitted, setSubmitted] = useState(false);
+  const effectiveBrush = useRef<Brush>(brush);
 
-  const applyBrush = useCallback(
+  const applyEffectiveBrush = useCallback(
     (slot: string) => {
       setRatings((prev) => {
         const next = new Map(prev);
-        if (brush === "none") {
+        if (effectiveBrush.current === "none") {
           next.delete(slot);
         } else {
-          next.set(slot, brush);
+          next.set(slot, effectiveBrush.current);
         }
         return next;
       });
     },
-    [brush]
+    []
+  );
+
+  const handleDragStart = useCallback(
+    (slot: string) => {
+      // If the cell already matches the selected brush, erase instead
+      const currentRating = ratings.get(slot);
+      if (
+        brush !== "none" &&
+        currentRating === brush
+      ) {
+        effectiveBrush.current = "none";
+      } else {
+        effectiveBrush.current = brush;
+      }
+      applyEffectiveBrush(slot);
+    },
+    [brush, ratings, applyEffectiveBrush]
   );
 
   const handleSubmit = async () => {
@@ -103,8 +121,8 @@ export default function Vote({ eventId }: { eventId: string }) {
             ? RATING_COLORS[ratings.get(slot)!]
             : "#d1d5db",
         })}
-        onDragStart={applyBrush}
-        onDragEnter={applyBrush}
+        onDragStart={handleDragStart}
+        onDragEnter={applyEffectiveBrush}
       />
 
       <div className="form-group" style={{ marginTop: 16 }}>

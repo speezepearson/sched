@@ -101,6 +101,9 @@ export default function TimeGrid({
                     onCellMouseLeave?.();
                   }}
                 >
+                  <span className="time-grid-cell-label">
+                    {formatHour(h)}
+                  </span>
                   {getCellContent?.(slot)}
                 </div>
               );
