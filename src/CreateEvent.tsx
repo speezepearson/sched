@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
-import TimeGrid, { slotKey, HOURS } from "./TimeGrid.tsx";
+import TimeGrid, { slotKey, HOURS, generateDateRange } from "./TimeGrid.tsx";
 
 export default function CreateEvent() {
   const [name, setName] = useState("");
@@ -24,16 +24,7 @@ export default function CreateEvent() {
 
   const createEvent = useMutation(api.events.create);
 
-  const dates = useMemo(() => {
-    const result: string[] = [];
-    const current = new Date(startDate + "T12:00:00");
-    const end = new Date(endDate + "T12:00:00");
-    while (current <= end) {
-      result.push(current.toISOString().split("T")[0]);
-      current.setDate(current.getDate() + 1);
-    }
-    return result;
-  }, [startDate, endDate]);
+  const dates = useMemo(() => generateDateRange(startDate, endDate), [startDate, endDate]);
 
   const handleDragStart = useCallback((slot: string) => {
     setSelectedSlots((prev) => {
