@@ -13,17 +13,28 @@ export function slotKey(date: string, hour: number): string {
   return `${date}:${hour}`;
 }
 
-export function dateRange(slots: string[]): string[] {
-  const unique = [...new Set(slots.map((s) => s.split(":")[0]))].sort();
-  if (unique.length <= 1) return unique;
+function localDateStr(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+export function generateDateRange(startDate: string, endDate: string): string[] {
   const result: string[] = [];
-  const current = new Date(unique[0] + "T12:00:00");
-  const end = new Date(unique[unique.length - 1] + "T12:00:00");
+  const current = new Date(startDate + "T12:00:00");
+  const end = new Date(endDate + "T12:00:00");
   while (current <= end) {
-    result.push(current.toISOString().split("T")[0]);
+    result.push(localDateStr(current));
     current.setDate(current.getDate() + 1);
   }
   return result;
+}
+
+export function dateRange(slots: string[]): string[] {
+  const unique = [...new Set(slots.map((s) => s.split(":")[0]))].sort();
+  if (unique.length <= 1) return unique;
+  return generateDateRange(unique[0], unique[unique.length - 1]);
 }
 
 interface TimeGridProps {
